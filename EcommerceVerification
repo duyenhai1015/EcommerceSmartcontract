@@ -1,51 +1,53 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
-// Hợp đồng chứng thực giao dịch thương mại điện tử
 contract EcommerceVerification {
-    // Cấu trúc dữ liệu lưu trữ thông tin một giao dịch
     struct GiaoDich {
-        uint maDonHang;        // Mã đơn hàng
-        uint maSanPham;        // Mã sản phẩm
-        string tenSanPham;     // Tên sản phẩm
-        string danhMuc;        // Danh mục sản phẩm
-        address khachHang;     // Địa chỉ ví của khách hàng
-        uint soLuong;          // Số lượng sản phẩm
-        uint tongTien;         // Tổng số tiền của đơn hàng
-        string nguonThanhToan; // Phương thức thanh toán (Ví điện tử, Ngân hàng...)
-        string maGiaoDich;     // Mã giao dịch từ cổng thanh toán
-        string maVanDon;       // Mã vận đơn từ đơn vị vận chuyển
-        string trangThaiGiaoHang; // Trạng thái đơn hàng (Đang giao, Hoàn thành...)
-        uint thoiGianDatHang;  // Thời gian đặt hàng
+        uint maDonHang;
+        uint maSanPham;
+        string tenSanPham;
+        string danhMuc;
+        string tenKhachHang;
+        uint soLuong;
+        uint tongTien;
+        string nguonThanhToan;
+        string maGiaoDich;
+        string maVanDon;
+        string trangThaiGiaoHang;
+        uint thoiGianDatHang;
     }
 
-    // Mapping lưu danh sách giao dịch
     mapping(uint => GiaoDich) public giaoDichs;
     uint public soLuongGiaoDich = 0;
 
-    // Sự kiện ghi nhận giao dịch mới
     event GiaoDichGhiNhan(
         uint maDonHang,
         uint maSanPham,
         string tenSanPham,
-        address khachHang,
+        string danhMuc,
+        string tenKhachHang,
+        uint soLuong,
         uint tongTien,
         string nguonThanhToan,
-        string maGiaoDich
+        string maGiaoDich,
+        string maVanDon,
+        string trangThaiGiaoHang,
+        uint thoiGianDatHang
     );
 
-    // Hàm ghi nhận giao dịch mới vào blockchain
     function ghiNhanGiaoDich(
         uint _maDonHang,
         uint _maSanPham,
         string memory _tenSanPham,
         string memory _danhMuc,
+        string memory _tenKhachHang,
         uint _soLuong,
         uint _tongTien,
         string memory _nguonThanhToan,
         string memory _maGiaoDich,
         string memory _maVanDon,
-        string memory _trangThaiGiaoHang
+        string memory _trangThaiGiaoHang,
+        uint _thoiGianDatHang
     ) public {
         require(giaoDichs[_maDonHang].maDonHang == 0, "Ma don hang da ton tai");
 
@@ -54,28 +56,40 @@ contract EcommerceVerification {
             _maSanPham,
             _tenSanPham,
             _danhMuc,
-            msg.sender,
+            _tenKhachHang,
             _soLuong,
             _tongTien,
             _nguonThanhToan,
             _maGiaoDich,
             _maVanDon,
             _trangThaiGiaoHang,
-            block.timestamp
+            _thoiGianDatHang
         );
 
         soLuongGiaoDich++;
-        emit GiaoDichGhiNhan(_maDonHang, _maSanPham, _tenSanPham, msg.sender, _tongTien, _nguonThanhToan, _maGiaoDich);
+
+        emit GiaoDichGhiNhan(
+            _maDonHang,
+            _maSanPham,
+            _tenSanPham,
+            _danhMuc,
+            _tenKhachHang,
+            _soLuong,
+            _tongTien,
+            _nguonThanhToan,
+            _maGiaoDich,
+            _maVanDon,
+            _trangThaiGiaoHang,
+            _thoiGianDatHang
+        );
     }
 
-    // Hàm kiểm tra giao dịch có tồn tại không
     function chungThucGiaoDich(uint _maDonHang) public view returns (bool) {
         return giaoDichs[_maDonHang].maDonHang != 0;
     }
 
-    // Hàm truy vấn thông tin giao dịch theo mã đơn hàng
     function layThongTinGiaoDich(uint _maDonHang) public view returns (
-        uint, uint, string memory, string memory, address, uint, uint, string memory, string memory, string memory, string memory, uint
+        uint, uint, string memory, string memory, string memory, uint, uint, string memory, string memory, string memory, string memory, uint
     ) {
         require(giaoDichs[_maDonHang].maDonHang != 0, "Giao dich khong ton tai");
         GiaoDich memory gd = giaoDichs[_maDonHang];
@@ -84,7 +98,7 @@ contract EcommerceVerification {
             gd.maSanPham,
             gd.tenSanPham,
             gd.danhMuc,
-            gd.khachHang,
+            gd.tenKhachHang,
             gd.soLuong,
             gd.tongTien,
             gd.nguonThanhToan,
