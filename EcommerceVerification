@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 contract EcommerceVerification {
     struct GiaoDich {
-        uint maDonHang;
-        uint maSanPham;
+        bytes12 maDonHang;
+        bytes12 maSanPham;
         string tenSanPham;
         string danhMuc;
         string tenKhachHang;
@@ -17,10 +17,9 @@ contract EcommerceVerification {
         uint thoiGianDatHang;
     }
 
-    // Struct chứa thông tin giao dịch đầu vào để tối ưu bộ nhớ stack
     struct ThongTinGiaoDichInput {
-        uint maDonHang;
-        uint maSanPham;
+        bytes12 maDonHang;
+        bytes12 maSanPham;
         string tenSanPham;
         string danhMuc;
         string tenKhachHang;
@@ -32,12 +31,12 @@ contract EcommerceVerification {
         string trangThaiGiaoHang;
     }
 
-    mapping(uint => GiaoDich) public giaoDichs;
+    mapping(bytes12 => GiaoDich) public giaoDichs;
     uint public soLuongGiaoDich = 0;
 
     event GiaoDichGhiNhan(
-        uint maDonHang,
-        uint maSanPham,
+        bytes12 maDonHang,
+        bytes12 maSanPham,
         string tenSanPham,
         string danhMuc,
         string tenKhachHang,
@@ -51,7 +50,7 @@ contract EcommerceVerification {
     );
 
     function ghiNhanGiaoDich(ThongTinGiaoDichInput memory input) public {
-        require(giaoDichs[input.maDonHang].maDonHang == 0, "Ma don hang da ton tai");
+        require(giaoDichs[input.maDonHang].maDonHang == bytes12(0), "Ma don hang da ton tai");
 
         giaoDichs[input.maDonHang] = GiaoDich(
             input.maDonHang,
@@ -86,14 +85,14 @@ contract EcommerceVerification {
         );
     }
 
-    function chungThucGiaoDich(uint _maDonHang) public view returns (bool) {
-        return giaoDichs[_maDonHang].maDonHang != 0;
+    function chungThucGiaoDich(bytes12 _maDonHang) public view returns (bool) {
+        return giaoDichs[_maDonHang].maDonHang != bytes12(0);
     }
 
-    function layThongTinGiaoDich(uint _maDonHang) public view returns (
-        uint, uint, string memory, string memory, string memory, uint, uint, string memory, string memory, string memory, string memory, uint
+    function layThongTinGiaoDich(bytes12 _maDonHang) public view returns (
+        bytes12, bytes12, string memory, string memory, string memory, uint, uint, string memory, string memory, string memory, string memory, uint
     ) {
-        require(giaoDichs[_maDonHang].maDonHang != 0, "Giao dich khong ton tai");
+        require(giaoDichs[_maDonHang].maDonHang != bytes12(0), "Giao dich khong ton tai");
         GiaoDich memory gd = giaoDichs[_maDonHang];
         return (
             gd.maDonHang,
