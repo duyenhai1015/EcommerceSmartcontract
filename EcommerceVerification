@@ -17,6 +17,21 @@ contract EcommerceVerification {
         uint thoiGianDatHang;
     }
 
+    // Struct chứa thông tin giao dịch đầu vào để tối ưu bộ nhớ stack
+    struct ThongTinGiaoDichInput {
+        uint maDonHang;
+        uint maSanPham;
+        string tenSanPham;
+        string danhMuc;
+        string tenKhachHang;
+        uint soLuong;
+        uint tongTien;
+        string nguonThanhToan;
+        string maGiaoDich;
+        string maVanDon;
+        string trangThaiGiaoHang;
+    }
+
     mapping(uint => GiaoDich) public giaoDichs;
     uint public soLuongGiaoDich = 0;
 
@@ -35,52 +50,39 @@ contract EcommerceVerification {
         uint thoiGianDatHang
     );
 
-    function ghiNhanGiaoDich(
-        uint _maDonHang,
-        uint _maSanPham,
-        string memory _tenSanPham,
-        string memory _danhMuc,
-        string memory _tenKhachHang,
-        uint _soLuong,
-        uint _tongTien,
-        string memory _nguonThanhToan,
-        string memory _maGiaoDich,
-        string memory _maVanDon,
-        string memory _trangThaiGiaoHang,
-        uint _thoiGianDatHang
-    ) public {
-        require(giaoDichs[_maDonHang].maDonHang == 0, "Ma don hang da ton tai");
+    function ghiNhanGiaoDich(ThongTinGiaoDichInput memory input) public {
+        require(giaoDichs[input.maDonHang].maDonHang == 0, "Ma don hang da ton tai");
 
-        giaoDichs[_maDonHang] = GiaoDich(
-            _maDonHang,
-            _maSanPham,
-            _tenSanPham,
-            _danhMuc,
-            _tenKhachHang,
-            _soLuong,
-            _tongTien,
-            _nguonThanhToan,
-            _maGiaoDich,
-            _maVanDon,
-            _trangThaiGiaoHang,
-            _thoiGianDatHang
+        giaoDichs[input.maDonHang] = GiaoDich(
+            input.maDonHang,
+            input.maSanPham,
+            input.tenSanPham,
+            input.danhMuc,
+            input.tenKhachHang,
+            input.soLuong,
+            input.tongTien,
+            input.nguonThanhToan,
+            input.maGiaoDich,
+            input.maVanDon,
+            input.trangThaiGiaoHang,
+            block.timestamp
         );
 
         soLuongGiaoDich++;
 
         emit GiaoDichGhiNhan(
-            _maDonHang,
-            _maSanPham,
-            _tenSanPham,
-            _danhMuc,
-            _tenKhachHang,
-            _soLuong,
-            _tongTien,
-            _nguonThanhToan,
-            _maGiaoDich,
-            _maVanDon,
-            _trangThaiGiaoHang,
-            _thoiGianDatHang
+            input.maDonHang,
+            input.maSanPham,
+            input.tenSanPham,
+            input.danhMuc,
+            input.tenKhachHang,
+            input.soLuong,
+            input.tongTien,
+            input.nguonThanhToan,
+            input.maGiaoDich,
+            input.maVanDon,
+            input.trangThaiGiaoHang,
+            block.timestamp
         );
     }
 
