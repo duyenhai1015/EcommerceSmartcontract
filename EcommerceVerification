@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 contract EcommerceVerification {
     struct GiaoDich {
-        bytes12 maDonHang;
-        bytes12 maSanPham;
+        string maDonHang;
+        string maSanPham;
         string tenSanPham;
         string danhMuc;
         string tenKhachHang;
@@ -14,12 +14,12 @@ contract EcommerceVerification {
         string maGiaoDich;
         string maVanDon;
         string trangThaiGiaoHang;
-        uint thoiGianDatHang;
+        uint thoiGianDatHang; // Nhận từ input
     }
 
     struct ThongTinGiaoDichInput {
-        bytes12 maDonHang;
-        bytes12 maSanPham;
+        string maDonHang;
+        string maSanPham;
         string tenSanPham;
         string danhMuc;
         string tenKhachHang;
@@ -29,14 +29,15 @@ contract EcommerceVerification {
         string maGiaoDich;
         string maVanDon;
         string trangThaiGiaoHang;
+        uint thoiGianDatHang; // Thêm trường này để nhận thời gian từ input
     }
 
-    mapping(bytes12 => GiaoDich) public giaoDichs;
+    mapping(string => GiaoDich) public giaoDichs;
     uint public soLuongGiaoDich = 0;
 
     event GiaoDichGhiNhan(
-        bytes12 maDonHang,
-        bytes12 maSanPham,
+        string maDonHang,
+        string maSanPham,
         string tenSanPham,
         string danhMuc,
         string tenKhachHang,
@@ -50,7 +51,7 @@ contract EcommerceVerification {
     );
 
     function ghiNhanGiaoDich(ThongTinGiaoDichInput memory input) public {
-        require(giaoDichs[input.maDonHang].maDonHang == bytes12(0), "Ma don hang da ton tai");
+        require(bytes(giaoDichs[input.maDonHang].maDonHang).length == 0, "Ma don hang da ton tai");
 
         giaoDichs[input.maDonHang] = GiaoDich(
             input.maDonHang,
@@ -64,7 +65,7 @@ contract EcommerceVerification {
             input.maGiaoDich,
             input.maVanDon,
             input.trangThaiGiaoHang,
-            block.timestamp
+            input.thoiGianDatHang // Nhận từ input
         );
 
         soLuongGiaoDich++;
@@ -81,18 +82,18 @@ contract EcommerceVerification {
             input.maGiaoDich,
             input.maVanDon,
             input.trangThaiGiaoHang,
-            block.timestamp
+            input.thoiGianDatHang // Nhận từ input
         );
     }
 
-    function chungThucGiaoDich(bytes12 _maDonHang) public view returns (bool) {
-        return giaoDichs[_maDonHang].maDonHang != bytes12(0);
+    function chungThucGiaoDich(string memory _maDonHang) public view returns (bool) {
+        return bytes(giaoDichs[_maDonHang].maDonHang).length != 0;
     }
 
-    function layThongTinGiaoDich(bytes12 _maDonHang) public view returns (
-        bytes12, bytes12, string memory, string memory, string memory, uint, uint, string memory, string memory, string memory, string memory, uint
+    function layThongTinGiaoDich(string memory _maDonHang) public view returns (
+        string memory, string memory, string memory, string memory, string memory, uint, uint, string memory, string memory, string memory, string memory, uint
     ) {
-        require(giaoDichs[_maDonHang].maDonHang != bytes12(0), "Giao dich khong ton tai");
+        require(bytes(giaoDichs[_maDonHang].maDonHang).length != 0, "Giao dich khong ton tai");
         GiaoDich memory gd = giaoDichs[_maDonHang];
         return (
             gd.maDonHang,
